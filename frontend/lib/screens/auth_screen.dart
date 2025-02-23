@@ -37,7 +37,7 @@ class AuthScreenState extends State<AuthScreen> {
         await ApiService.setToken(token);
         if (mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => const MainScreen()),
           );
         }
       } catch (e) {
