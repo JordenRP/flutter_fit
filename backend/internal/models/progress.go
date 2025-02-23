@@ -102,8 +102,25 @@ func GetUserProgress(userID uint) ([]Progress, error) {
 func GetUserProgressStats(userID uint, startDate, endDate time.Time) (*ProgressStats, error) {
 	var stats ProgressStats
 
-	// Получаем первую запись за период
+	// Проверяем наличие записей за период
+	var count int
 	err := db.DB.QueryRow(
+		`SELECT COUNT(*) 
+		FROM progress 
+		WHERE user_id = $1 AND date >= $2 AND date <= $3`,
+		userID, startDate, endDate,
+	).Scan(&count)
+	if err != nil {
+		return nil, err
+	}
+
+	// Если записей нет, возвращаем нулевые значения
+	if count == 0 {
+		return &ProgressStats{}, nil
+	}
+
+	// Получаем первую запись за период
+	err = db.DB.QueryRow(
 		`SELECT weight, chest, waist, hips, biceps, thigh 
 		FROM progress 
 		WHERE user_id = $1 AND date >= $2 AND date <= $3 
@@ -138,6 +155,23 @@ func GetUserProgressStats(userID uint, startDate, endDate time.Time) (*ProgressS
 }
 
 func GetUserProgressData(userID uint, startDate, endDate time.Time) ([]MeasurementStats, error) {
+	// Проверяем наличие записей за период
+	var count int
+	err := db.DB.QueryRow(
+		`SELECT COUNT(*) 
+		FROM progress 
+		WHERE user_id = $1 AND date >= $2 AND date <= $3`,
+		userID, startDate, endDate,
+	).Scan(&count)
+	if err != nil {
+		return nil, err
+	}
+
+	// Если записей нет, возвращаем пустой массив
+	if count == 0 {
+		return []MeasurementStats{}, nil
+	}
+
 	rows, err := db.DB.Query(
 		`SELECT date, weight, chest, waist, hips, biceps, thigh 
 		FROM progress 

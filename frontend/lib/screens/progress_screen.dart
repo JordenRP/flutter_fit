@@ -46,7 +46,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime(2025),
+      lastDate: DateTime(2030),
     );
     if (picked != null) {
       _dateController.text = DateFormat('yyyy-MM-dd').format(picked);

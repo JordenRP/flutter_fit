@@ -43,7 +43,7 @@ class _TrainingPlanScreenState extends State<TrainingPlanScreen> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2020),
-      lastDate: DateTime(2025),
+      lastDate: DateTime(2030),
     );
     if (picked != null) {
       controller.text = DateFormat('yyyy-MM-dd').format(picked);
