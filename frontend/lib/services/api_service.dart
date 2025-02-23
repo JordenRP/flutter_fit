@@ -18,6 +18,10 @@ class ApiService {
 
   static Future<dynamic> get(String endpoint) async {
     final token = await getToken();
+    if (token == null) {
+      throw Exception('No authentication token found');
+    }
+    
     final response = await http.get(
       Uri.parse('$baseUrl$endpoint'),
       headers: {
@@ -27,14 +31,19 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      final data = json.decode(response.body);
+      return data ?? [];
     } else {
-      throw Exception('Failed to load data');
+      throw Exception('Failed to load data: ${response.statusCode}');
     }
   }
 
   static Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
     final token = await getToken();
+    if (token == null) {
+      throw Exception('No authentication token found');
+    }
+    
     final response = await http.post(
       Uri.parse('$baseUrl$endpoint'),
       headers: {
@@ -45,9 +54,10 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+      final responseData = json.decode(response.body);
+      return responseData ?? {};
     } else {
-      throw Exception('Failed to send data');
+      throw Exception('Failed to send data: ${response.statusCode}');
     }
   }
 }

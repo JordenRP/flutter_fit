@@ -16,7 +16,7 @@ class _NutritionScreenState extends State<NutritionScreen> {
   final _proteinsController = TextEditingController();
   final _fatsController = TextEditingController();
   final _carbsController = TextEditingController();
-  List<dynamic> nutritionEntries = [];
+  List<Map<String, dynamic>> nutritionEntries = [];
 
   @override
   void initState() {
@@ -28,12 +28,14 @@ class _NutritionScreenState extends State<NutritionScreen> {
     try {
       final response = await ApiService.get('/api/nutrition');
       setState(() {
-        nutritionEntries = response;
+        nutritionEntries = List<Map<String, dynamic>>.from(response ?? []);
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Ошибка загрузки записей о питании')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ошибка загрузки записей о питании: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -77,7 +79,15 @@ class _NutritionScreenState extends State<NutritionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Питание')),
+      appBar: AppBar(
+        title: Text('Питание'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: _loadNutrition,
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -152,9 +162,9 @@ class _NutritionScreenState extends State<NutritionScreen> {
                 final entry = nutritionEntries[index];
                 return Card(
                   child: ListTile(
-                    title: Text('${entry['meal_type']} - ${entry['food_name']}'),
+                    title: Text('${entry['meal_type'] ?? ''} - ${entry['food_name'] ?? ''}'),
                     subtitle: Text(
-                      '${entry['date'].substring(0, 10)}\nКалории: ${entry['calories']}, Б: ${entry['proteins']}г, Ж: ${entry['fats']}г, У: ${entry['carbs']}г',
+                      '${entry['date']?.toString().substring(0, 10) ?? ''}\nКалории: ${entry['calories'] ?? 0}, Б: ${entry['proteins'] ?? 0}г, Ж: ${entry['fats'] ?? 0}г, У: ${entry['carbs'] ?? 0}г',
                     ),
                   ),
                 );
