@@ -1,38 +1,39 @@
 package db
 
 import (
-    "database/sql"
-    _ "github.com/lib/pq"
-    "fmt"
+	"database/sql"
+	"fmt"
+	_ "github.com/lib/pq"
+	"os"
 )
 
 var DB *sql.DB
 
 func InitDB(host, port, user, password, dbname string) error {
-    connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-        host, port, user, password, dbname)
-    
-    var err error
-    DB, err = sql.Open("postgres", connStr)
-    if err != nil {
-        return err
-    }
+	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
 
-    err = DB.Ping()
-    if err != nil {
-        return err
-    }
+	var err error
+	DB, err = sql.Open("postgres", connStr)
+	if err != nil {
+		return err
+	}
 
-    err = createTables()
-    if err != nil {
-        return err
-    }
+	if err = DB.Ping(); err != nil {
+		return err
+	}
 
-    return nil
+	sqlFile, err := os.ReadFile("/app/internal/db/init.sql")
+	if err != nil {
+		return err
+	}
+
+	_, err = DB.Exec(string(sqlFile))
+	return err
 }
 
 func createTables() error {
-    query := `
+	query := `
     CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
@@ -40,6 +41,6 @@ func createTables() error {
         name VARCHAR(255) NOT NULL
     )`
 
-    _, err := DB.Exec(query)
-    return err
+	_, err := DB.Exec(query)
+	return err
 } 

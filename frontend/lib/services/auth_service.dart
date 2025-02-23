@@ -2,31 +2,31 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  static const baseUrl = 'http://localhost:8080/api/auth';
+  static const String baseUrl = 'http://localhost:8080';
 
   Future<String> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/login'),
+      Uri.parse('$baseUrl/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+      body: json.encode({
         'email': email,
         'password': password,
       }),
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = json.decode(response.body);
       return data['token'];
     } else {
-      throw Exception('Failed to login');
+      throw Exception('Ошибка авторизации');
     }
   }
 
   Future<String> register(String email, String password, String name) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/register'),
+      Uri.parse('$baseUrl/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+      body: json.encode({
         'email': email,
         'password': password,
         'name': name,
@@ -34,10 +34,10 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = json.decode(response.body);
       return data['token'];
     } else {
-      throw Exception('Failed to register');
+      throw Exception('Ошибка регистрации');
     }
   }
 } 

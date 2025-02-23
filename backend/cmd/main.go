@@ -36,10 +36,24 @@ func main() {
 
 	r := mux.NewRouter()
 	
-	authHandler := handlers.NewAuthHandler("your-secret-key")
+	const jwtSecret = "your-secret-key"
+	authHandler := handlers.NewAuthHandler(jwtSecret)
+	workoutHandler := handlers.NewWorkoutHandler()
+	nutritionHandler := handlers.NewNutritionHandler()
 
+	// Public routes
 	r.HandleFunc("/api/auth/login", authHandler.Login).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/auth/register", authHandler.Register).Methods("POST", "OPTIONS")
+
+	// Protected routes
+	api := r.PathPrefix("/api").Subrouter()
+	api.Use(handlers.AuthMiddleware(jwtSecret))
+
+	api.HandleFunc("/workouts", workoutHandler.CreateWorkout).Methods("POST", "OPTIONS")
+	api.HandleFunc("/workouts", workoutHandler.GetWorkouts).Methods("GET", "OPTIONS")
+
+	api.HandleFunc("/nutrition", nutritionHandler.CreateNutrition).Methods("POST", "OPTIONS")
+	api.HandleFunc("/nutrition", nutritionHandler.GetNutrition).Methods("GET", "OPTIONS")
 
 	r.Use(corsMiddleware)
 
@@ -47,4 +61,4 @@ func main() {
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatal(err)
 	}
-} 
+}
