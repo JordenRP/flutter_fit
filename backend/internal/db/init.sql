@@ -57,4 +57,13 @@ CREATE TABLE IF NOT EXISTS meal_plans (
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL,
     days JSONB NOT NULL        -- массив дней с приемами пищи
+);
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    type VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT false,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ); 

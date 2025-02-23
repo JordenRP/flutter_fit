@@ -3,6 +3,7 @@ import 'screens/home_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/training_plan_screen.dart';
 import 'screens/meal_plan_screen.dart';
+import 'screens/notification_screen.dart';
 import 'screens/auth_screen.dart';
 import 'services/api_service.dart';
 
@@ -80,6 +81,7 @@ class _MainScreenState extends State<MainScreen> {
     ProgressScreen(),
     TrainingPlanScreen(),
     MealPlanScreen(),
+    NotificationScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -110,6 +112,10 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant_menu),
             label: 'Питание',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Уведомления',
           ),
         ],
         currentIndex: _selectedIndex,

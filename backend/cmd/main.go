@@ -43,6 +43,7 @@ func main() {
 	progressHandler := handlers.NewProgressHandler()
 	trainingPlanHandler := handlers.NewTrainingPlanHandler()
 	mealPlanHandler := handlers.NewMealPlanHandler()
+	notificationHandler := handlers.NewNotificationHandler()
 
 	// Public routes
 	r.HandleFunc("/api/auth/login", authHandler.Login).Methods("POST", "OPTIONS")
@@ -66,6 +67,11 @@ func main() {
 
 	api.HandleFunc("/meal-plans", mealPlanHandler.CreateMealPlan).Methods("POST", "OPTIONS")
 	api.HandleFunc("/meal-plans", mealPlanHandler.GetMealPlans).Methods("GET", "OPTIONS")
+
+	// Notification routes
+	api.HandleFunc("/notifications", notificationHandler.GetNotifications).Methods("GET", "OPTIONS")
+	api.HandleFunc("/notifications/mark-read", notificationHandler.MarkAsRead).Methods("POST", "OPTIONS")
+	api.HandleFunc("/notifications", notificationHandler.CreateNotification).Methods("POST", "OPTIONS")
 
 	r.Use(corsMiddleware)
 
