@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/auth_screen.dart';
 import 'screens/workout_screen.dart';
 import 'screens/nutrition_screen.dart';
+import 'screens/progress_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   static final List<Widget> _screens = [
     WorkoutScreen(),
     NutritionScreen(),
+    ProgressScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -57,6 +59,10 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.restaurant),
             label: 'Питание',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.trending_up),
+            label: 'Прогресс',
           ),
         ],
         currentIndex: _selectedIndex,

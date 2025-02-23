@@ -40,6 +40,7 @@ func main() {
 	authHandler := handlers.NewAuthHandler(jwtSecret)
 	workoutHandler := handlers.NewWorkoutHandler()
 	nutritionHandler := handlers.NewNutritionHandler()
+	progressHandler := handlers.NewProgressHandler()
 
 	// Public routes
 	r.HandleFunc("/api/auth/login", authHandler.Login).Methods("POST", "OPTIONS")
@@ -54,6 +55,9 @@ func main() {
 
 	api.HandleFunc("/nutrition", nutritionHandler.CreateNutrition).Methods("POST", "OPTIONS")
 	api.HandleFunc("/nutrition", nutritionHandler.GetNutrition).Methods("GET", "OPTIONS")
+
+	api.HandleFunc("/progress", progressHandler.CreateProgress).Methods("POST", "OPTIONS")
+	api.HandleFunc("/progress", progressHandler.GetProgress).Methods("GET", "OPTIONS")
 
 	r.Use(corsMiddleware)
 
