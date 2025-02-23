@@ -61,6 +61,8 @@ func main() {
 
 	api.HandleFunc("/progress", progressHandler.CreateProgress).Methods("POST", "OPTIONS")
 	api.HandleFunc("/progress", progressHandler.GetProgress).Methods("GET", "OPTIONS")
+	api.HandleFunc("/progress/stats", progressHandler.GetStats).Methods("POST", "OPTIONS")
+	api.HandleFunc("/progress/chart", progressHandler.GetChartData).Methods("POST", "OPTIONS")
 
 	api.HandleFunc("/training-plans", trainingPlanHandler.CreateTrainingPlan).Methods("POST", "OPTIONS")
 	api.HandleFunc("/training-plans", trainingPlanHandler.GetTrainingPlans).Methods("GET", "OPTIONS")

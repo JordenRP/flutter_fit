@@ -18,6 +18,37 @@ type Progress struct {
 	Notes       string    `json:"notes"`       // заметки
 }
 
+type ProgressStats struct {
+	StartWeight     float64 `json:"start_weight"`
+	CurrentWeight   float64 `json:"current_weight"`
+	WeightChange    float64 `json:"weight_change"`
+	StartChest      float64 `json:"start_chest"`
+	CurrentChest    float64 `json:"current_chest"`
+	ChestChange     float64 `json:"chest_change"`
+	StartWaist      float64 `json:"start_waist"`
+	CurrentWaist    float64 `json:"current_waist"`
+	WaistChange     float64 `json:"waist_change"`
+	StartHips       float64 `json:"start_hips"`
+	CurrentHips     float64 `json:"current_hips"`
+	HipsChange      float64 `json:"hips_change"`
+	StartBiceps     float64 `json:"start_biceps"`
+	CurrentBiceps   float64 `json:"current_biceps"`
+	BicepsChange    float64 `json:"biceps_change"`
+	StartThigh      float64 `json:"start_thigh"`
+	CurrentThigh    float64 `json:"current_thigh"`
+	ThighChange     float64 `json:"thigh_change"`
+}
+
+type MeasurementStats struct {
+	Date    time.Time `json:"date"`
+	Weight  float64   `json:"weight"`
+	Chest   float64   `json:"chest"`
+	Waist   float64   `json:"waist"`
+	Hips    float64   `json:"hips"`
+	Biceps  float64   `json:"biceps"`
+	Thigh   float64   `json:"thigh"`
+}
+
 func CreateProgress(userID uint, date time.Time, weight, chest, waist, hips, biceps, thigh float64, notes string) (*Progress, error) {
 	var id uint
 	err := db.DB.QueryRow(
@@ -66,4 +97,67 @@ func GetUserProgress(userID uint) ([]Progress, error) {
 		progress = append(progress, p)
 	}
 	return progress, nil
+}
+
+func GetUserProgressStats(userID uint, startDate, endDate time.Time) (*ProgressStats, error) {
+	var stats ProgressStats
+
+	// Получаем первую запись за период
+	err := db.DB.QueryRow(
+		`SELECT weight, chest, waist, hips, biceps, thigh 
+		FROM progress 
+		WHERE user_id = $1 AND date >= $2 AND date <= $3 
+		ORDER BY date ASC LIMIT 1`,
+		userID, startDate, endDate,
+	).Scan(&stats.StartWeight, &stats.StartChest, &stats.StartWaist, &stats.StartHips, &stats.StartBiceps, &stats.StartThigh)
+	if err != nil {
+		return nil, err
+	}
+
+	// Получаем последнюю запись за период
+	err = db.DB.QueryRow(
+		`SELECT weight, chest, waist, hips, biceps, thigh 
+		FROM progress 
+		WHERE user_id = $1 AND date >= $2 AND date <= $3 
+		ORDER BY date DESC LIMIT 1`,
+		userID, startDate, endDate,
+	).Scan(&stats.CurrentWeight, &stats.CurrentChest, &stats.CurrentWaist, &stats.CurrentHips, &stats.CurrentBiceps, &stats.CurrentThigh)
+	if err != nil {
+		return nil, err
+	}
+
+	// Вычисляем изменения
+	stats.WeightChange = stats.CurrentWeight - stats.StartWeight
+	stats.ChestChange = stats.CurrentChest - stats.StartChest
+	stats.WaistChange = stats.CurrentWaist - stats.StartWaist
+	stats.HipsChange = stats.CurrentHips - stats.StartHips
+	stats.BicepsChange = stats.CurrentBiceps - stats.StartBiceps
+	stats.ThighChange = stats.CurrentThigh - stats.StartThigh
+
+	return &stats, nil
+}
+
+func GetUserProgressData(userID uint, startDate, endDate time.Time) ([]MeasurementStats, error) {
+	rows, err := db.DB.Query(
+		`SELECT date, weight, chest, waist, hips, biceps, thigh 
+		FROM progress 
+		WHERE user_id = $1 AND date >= $2 AND date <= $3 
+		ORDER BY date ASC`,
+		userID, startDate, endDate,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var stats []MeasurementStats
+	for rows.Next() {
+		var s MeasurementStats
+		err := rows.Scan(&s.Date, &s.Weight, &s.Chest, &s.Waist, &s.Hips, &s.Biceps, &s.Thigh)
+		if err != nil {
+			return nil, err
+		}
+		stats = append(stats, s)
+	}
+	return stats, nil
 } 

@@ -20,6 +20,11 @@ type ProgressRequest struct {
 	Notes   string  `json:"notes"`
 }
 
+type StatsRequest struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+}
+
 func NewProgressHandler() *ProgressHandler {
 	return &ProgressHandler{}
 }
@@ -67,4 +72,62 @@ func (h *ProgressHandler) GetProgress(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(progress)
+}
+
+func (h *ProgressHandler) GetStats(w http.ResponseWriter, r *http.Request) {
+	var req StatsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Неверный формат запроса", http.StatusBadRequest)
+		return
+	}
+
+	startDate, err := time.Parse("2006-01-02", req.StartDate)
+	if err != nil {
+		http.Error(w, "Неверный формат начальной даты", http.StatusBadRequest)
+		return
+	}
+
+	endDate, err := time.Parse("2006-01-02", req.EndDate)
+	if err != nil {
+		http.Error(w, "Неверный формат конечной даты", http.StatusBadRequest)
+		return
+	}
+
+	userID := r.Context().Value("user_id").(uint)
+	stats, err := models.GetUserProgressStats(userID, startDate, endDate)
+	if err != nil {
+		http.Error(w, "Не удалось получить статистику", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(stats)
+}
+
+func (h *ProgressHandler) GetChartData(w http.ResponseWriter, r *http.Request) {
+	var req StatsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Неверный формат запроса", http.StatusBadRequest)
+		return
+	}
+
+	startDate, err := time.Parse("2006-01-02", req.StartDate)
+	if err != nil {
+		http.Error(w, "Неверный формат начальной даты", http.StatusBadRequest)
+		return
+	}
+
+	endDate, err := time.Parse("2006-01-02", req.EndDate)
+	if err != nil {
+		http.Error(w, "Неверный формат конечной даты", http.StatusBadRequest)
+		return
+	}
+
+	userID := r.Context().Value("user_id").(uint)
+	data, err := models.GetUserProgressData(userID, startDate, endDate)
+	if err != nil {
+		http.Error(w, "Не удалось получить данные для графика", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(data)
 } 

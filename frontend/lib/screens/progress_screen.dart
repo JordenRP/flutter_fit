@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
+import 'progress_stats_screen.dart';
 
 class ProgressScreen extends StatefulWidget {
   @override
@@ -84,6 +85,15 @@ class _ProgressScreenState extends State<ProgressScreen> {
       appBar: AppBar(
         title: Text('Прогресс'),
         actions: [
+          IconButton(
+            icon: Icon(Icons.bar_chart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProgressStatsScreen()),
+              );
+            },
+          ),
           IconButton(
             icon: Icon(Icons.refresh),
             onPressed: _loadProgress,
