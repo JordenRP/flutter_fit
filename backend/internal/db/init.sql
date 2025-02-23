@@ -37,4 +37,24 @@ CREATE TABLE IF NOT EXISTS progress (
     biceps DECIMAL(5,2),       -- обхват бицепса в см
     thigh DECIMAL(5,2),        -- обхват бедра в см
     notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS training_plans (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    days JSONB NOT NULL        -- массив дней с упражнениями
+);
+
+CREATE TABLE IF NOT EXISTS meal_plans (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    days JSONB NOT NULL        -- массив дней с приемами пищи
 ); 

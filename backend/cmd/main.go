@@ -41,6 +41,8 @@ func main() {
 	workoutHandler := handlers.NewWorkoutHandler()
 	nutritionHandler := handlers.NewNutritionHandler()
 	progressHandler := handlers.NewProgressHandler()
+	trainingPlanHandler := handlers.NewTrainingPlanHandler()
+	mealPlanHandler := handlers.NewMealPlanHandler()
 
 	// Public routes
 	r.HandleFunc("/api/auth/login", authHandler.Login).Methods("POST", "OPTIONS")
@@ -58,6 +60,12 @@ func main() {
 
 	api.HandleFunc("/progress", progressHandler.CreateProgress).Methods("POST", "OPTIONS")
 	api.HandleFunc("/progress", progressHandler.GetProgress).Methods("GET", "OPTIONS")
+
+	api.HandleFunc("/training-plans", trainingPlanHandler.CreateTrainingPlan).Methods("POST", "OPTIONS")
+	api.HandleFunc("/training-plans", trainingPlanHandler.GetTrainingPlans).Methods("GET", "OPTIONS")
+
+	api.HandleFunc("/meal-plans", mealPlanHandler.CreateMealPlan).Methods("POST", "OPTIONS")
+	api.HandleFunc("/meal-plans", mealPlanHandler.GetMealPlans).Methods("GET", "OPTIONS")
 
 	r.Use(corsMiddleware)
 

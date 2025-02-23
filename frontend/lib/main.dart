@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'screens/auth_screen.dart';
-import 'screens/workout_screen.dart';
-import 'screens/nutrition_screen.dart';
+import 'screens/home_screen.dart';
 import 'screens/progress_screen.dart';
+import 'screens/training_plan_screen.dart';
+import 'screens/meal_plan_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,30 +14,31 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fitness App',
+      title: 'Фитнес Трекер',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const AuthScreen(),
+      home: const MainScreen(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  static final List<Widget> _screens = [
-    WorkoutScreen(),
-    NutritionScreen(),
+  final List<Widget> _screens = [
+    HomeScreen(),
     ProgressScreen(),
+    TrainingPlanScreen(),
+    MealPlanScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -51,18 +52,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Главная',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.show_chart),
+            label: 'Прогресс',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
             label: 'Тренировки',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.restaurant),
+            icon: Icon(Icons.restaurant_menu),
             label: 'Питание',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.trending_up),
-            label: 'Прогресс',
           ),
         ],
         currentIndex: _selectedIndex,
