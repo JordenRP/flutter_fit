@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
+import '../services/api_service.dart';
+import '../main.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -32,13 +34,23 @@ class AuthScreenState extends State<AuthScreen> {
             _nameController.text,
           );
         }
+<<<<<<< HEAD
         if (mounted && token.isNotEmpty) {
           Navigator.pushReplacementNamed(context, '/tasks');
+=======
+        await ApiService.setToken(token);
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+          );
+>>>>>>> feature
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(e.toString())),
+          );
+        }
       }
     }
   }
@@ -62,18 +74,18 @@ class AuthScreenState extends State<AuthScreen> {
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return 'Введите email';
                       }
                       return null;
                     },
                   ),
                   TextFormField(
                     controller: _passwordController,
-                    decoration: const InputDecoration(labelText: 'Password'),
+                    decoration: const InputDecoration(labelText: 'Пароль'),
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return 'Введите пароль';
                       }
                       return null;
                     },
@@ -81,10 +93,10 @@ class AuthScreenState extends State<AuthScreen> {
                   if (!_isLogin)
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Name'),
+                      decoration: const InputDecoration(labelText: 'Имя'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return 'Введите имя';
                         }
                         return null;
                       },
@@ -92,7 +104,7 @@ class AuthScreenState extends State<AuthScreen> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _submitForm,
-                    child: Text(_isLogin ? 'Login' : 'Register'),
+                    child: Text(_isLogin ? 'Войти' : 'Зарегистрироваться'),
                   ),
                   TextButton(
                     onPressed: () {
@@ -101,8 +113,8 @@ class AuthScreenState extends State<AuthScreen> {
                       });
                     },
                     child: Text(_isLogin
-                        ? 'Create an account'
-                        : 'Already have an account?'),
+                        ? 'Создать аккаунт'
+                        : 'Уже есть аккаунт?'),
                   ),
                 ],
               ),

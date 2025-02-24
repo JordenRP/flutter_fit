@@ -5,11 +5,16 @@ import (
 	"net/http"
 	"os"
 	"github.com/gorilla/mux"
+<<<<<<< HEAD
 	"todo-app/internal/handlers"
 	"todo-app/internal/db"
 	"todo-app/internal/middleware"
 	"time"
 	"todo-app/internal/models"
+=======
+	"fitness/internal/handlers"
+	"fitness/internal/db"
+>>>>>>> feature
 )
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -42,15 +47,28 @@ func main() {
 	r := mux.NewRouter()
 	r.Use(corsMiddleware)
 	
+<<<<<<< HEAD
 	jwtSecret := []byte("your-secret-key")
 	authHandler := handlers.NewAuthHandler(string(jwtSecret))
 	taskHandler := handlers.NewTaskHandler()
 	notificationHandler := handlers.NewNotificationHandler()
 	categoryHandler := handlers.NewCategoryHandler()
+=======
+	const jwtSecret = "your-secret-key"
+	authHandler := handlers.NewAuthHandler(jwtSecret)
+	workoutHandler := handlers.NewWorkoutHandler()
+	nutritionHandler := handlers.NewNutritionHandler()
+	progressHandler := handlers.NewProgressHandler()
+	trainingPlanHandler := handlers.NewTrainingPlanHandler()
+	mealPlanHandler := handlers.NewMealPlanHandler()
+	notificationHandler := handlers.NewNotificationHandler()
+>>>>>>> feature
 
+	// Public routes
 	r.HandleFunc("/api/auth/login", authHandler.Login).Methods("POST", "OPTIONS")
 	r.HandleFunc("/api/auth/register", authHandler.Register).Methods("POST", "OPTIONS")
 
+<<<<<<< HEAD
 	taskRouter := r.PathPrefix("/api/tasks").Subrouter()
 	taskRouter.Use(middleware.AuthMiddleware(jwtSecret))
 	taskRouter.HandleFunc("", taskHandler.Create).Methods("POST", "OPTIONS")
@@ -80,9 +98,38 @@ func main() {
 			}
 		}
 	}()
+=======
+	// Protected routes
+	api := r.PathPrefix("/api").Subrouter()
+	api.Use(handlers.AuthMiddleware(jwtSecret))
+
+	api.HandleFunc("/workouts", workoutHandler.CreateWorkout).Methods("POST", "OPTIONS")
+	api.HandleFunc("/workouts", workoutHandler.GetWorkouts).Methods("GET", "OPTIONS")
+
+	api.HandleFunc("/nutrition", nutritionHandler.CreateNutrition).Methods("POST", "OPTIONS")
+	api.HandleFunc("/nutrition", nutritionHandler.GetNutrition).Methods("GET", "OPTIONS")
+
+	api.HandleFunc("/progress", progressHandler.CreateProgress).Methods("POST", "OPTIONS")
+	api.HandleFunc("/progress", progressHandler.GetProgress).Methods("GET", "OPTIONS")
+	api.HandleFunc("/progress/stats", progressHandler.GetStats).Methods("POST", "OPTIONS")
+	api.HandleFunc("/progress/chart", progressHandler.GetChartData).Methods("POST", "OPTIONS")
+
+	api.HandleFunc("/training-plans", trainingPlanHandler.CreateTrainingPlan).Methods("POST", "OPTIONS")
+	api.HandleFunc("/training-plans", trainingPlanHandler.GetTrainingPlans).Methods("GET", "OPTIONS")
+
+	api.HandleFunc("/meal-plans", mealPlanHandler.CreateMealPlan).Methods("POST", "OPTIONS")
+	api.HandleFunc("/meal-plans", mealPlanHandler.GetMealPlans).Methods("GET", "OPTIONS")
+
+	// Notification routes
+	api.HandleFunc("/notifications", notificationHandler.GetNotifications).Methods("GET", "OPTIONS")
+	api.HandleFunc("/notifications/mark-read", notificationHandler.MarkAsRead).Methods("POST", "OPTIONS")
+	api.HandleFunc("/notifications", notificationHandler.CreateNotification).Methods("POST", "OPTIONS")
+
+	r.Use(corsMiddleware)
+>>>>>>> feature
 
 	log.Println("Server starting on port 8080...")
 	if err := http.ListenAndServe(":8080", r); err != nil {
 		log.Fatal(err)
 	}
-} 
+}

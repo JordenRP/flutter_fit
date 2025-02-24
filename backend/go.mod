@@ -1,4 +1,4 @@
-module todo-app
+module fitness
 
 go 1.22
 
